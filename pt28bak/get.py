@@ -2,8 +2,6 @@ from db import Sql
 from datetime import datetime
 
 
-
-
 def get_now_data(t):
     sql = Sql()
     ret = sql.execute(f"select id, alg0, alg1, alg2, alg3, alg4, alg5, alg6, alg7, alg8 from pt_{t} order by id desc limit 1")

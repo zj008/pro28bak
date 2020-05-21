@@ -65,7 +65,7 @@ def history(t, num):
                             gain4=r[28]
                             ))
             # print("*******", r[21])
-            print(r)
+            # print(r)
             pet1 += int(r[21])
             gain1 += int(float(r[22]))
             pet2 += int(r[23])
