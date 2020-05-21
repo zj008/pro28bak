@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <style>
+        th,td{
+            text-align:center;
+        }
+        body{
+            margin-top: 50px;
+        }
+        .h{
+            width:130px;
+            height:15px;
+            font-weight: bold;
+            margin:100px auto;
+        }
+        .content{
+            width:15px;
+            height:15px;
+            font:15px/15px 'Microsoft YaHei';
+<!--            color: #fff;-->
+            font-weight: bold;
+            text-align: center;
+            margin:100px auto;
+        }
+        .container{
+            text-align: center;
+        }
+        .cuo{
+            width:58px;
+            height:15px;
+            text-align:center;
+        }
+        .dui{
+            width:58px;
+            height:15px;
+            background: #ff0000;
+            font:15px/15px 'Microsoft YaHei';
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            margin:100px auto;
+            /*边框阴影*/
+            /*效果1*/
+            box-shadow: inset 5px 5px 15px #ccc;
+            /*效果2*/
+            box-shadow: inset 5px 5px 15px #ef062e,5px 5px 20px #000;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button type="button" class="btn t btn-primary btn-lg" value="big">大小</button>
+        <button type="button" class="btn t btn-lg" value="double">单双</button>
+    </div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>期号</th>
+            <th>开奖</th>
+            <th>算法1</th>
+            <th>算法2</th>
+            <th>算法3</th>
+            <th>算法4</th>
+            <th>算法5</th>
+            <th>算法6</th>
+            <th>算法7</th>
+            <th>算法8</th>
+            <th>预测值</th>
+        </tr>
+        <tr id="data">
+
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="row">
+        </div><!-- /.col-lg-6 -->
+        <div class="col-lg-2 col-lg-offset-5">
+                <div class="input-group">
+<!--                    <input type="text" class="form-control" placeholder="请输入展示条数">-->
+                    <select name="条数" id="num" class="form-control">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                        <option value="2000">2000</option>
+                        <option value="5000">5000</option>
+                        <option value="10000">10000</option>
+                        <option value="20000">20000</option>
+                        <option value="50000">50000</option>
+                    </select>
+                    <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="go">查询</button>
+          </span>
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div><!-- /.row -->
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>期数</th>
+                <th>时间</th>
+                <th>结果</th>
+                <th>算法1</th>
+                <th>算法2</th>
+                <th>算法3</th>
+                <th>算法4</th>
+                <th>算法5</th>
+                <th>算法6</th>
+                <th>算法7</th>
+                <th>算法8</th>
+                <th class="content"></th>
+                <th>预测值</th>
+                <th>投注1</th>
+                <th>盈利1</th>
+                <th>投注2</th>
+                <th>盈利2</th>
+                <th>投注3</th>
+                <th>盈利3</th>
+                <th>投注4</th>
+                <th>盈利4</th>
+            </tr>
+            </thead>
+            <tbody id="history">
+
+            </tbody>
+        </table>
+
+    <script>
+        t = "big"
+        $(window).ready(function () {
+            get_now()
+            get_history()
+            $(".t").click(function () {
+                $(".t").removeClass("btn-primary")
+                $(this).addClass("btn-primary")
+                t = $(this).val()
+            })
+            $("#go").click(function () {
+                get_now()
+                get_history()
+            })
+        })
+
+        $(function(){
+            setInterval(get_now,50000);
+        });
+
+        function get_history() {
+            var num = $("#num").val()
+            $.ajax({
+                type: 'GET',
+                url: "/history/" + t + "/" + num,
+                success: function (data) {
+                    var y = data.ying;
+                    var t = data.tou;
+                    var r = data.rate;
+                    var data = data.data;
+                    $("#history").empty()
+                    var s = "<tr><td></td><td></td><td></td>"
+                    for (i=0;i<r.length;i++){
+                        s += "<td>" + r[i] + "</td>"
+                    }
+                    s += "</tr>"
+                    $("#history").append(s)
+                    for (i=0;i<data.length;i++){
+                        d = data[i]
+                        var s = "<tr><td class='h'>" + d.id + "</td>"
+                        s+= "<td class='h'>" + d.pub_time + "</td>"
+                        s+= "<td class='h'>" + d.result + "</td>"
+                        if (d.alg1[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg1[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg1[0] + "</td>"
+                        }
+                        if (d.alg2[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg2[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg2[0] + "</td>"
+                        }
+                        if (d.alg3[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg3[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg3[0] + "</td>"
+                        }
+                        if (d.alg4[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg4[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg4[0] + "</td>"
+                        }
+                        if (d.alg5[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg5[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg5[0] + "</td>"
+                        }
+                        if (d.alg6[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg6[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg6[0] + "</td>"
+                        }
+                        if (d.alg7[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg7[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg7[0] + "</td>"
+                        }
+                        if (d.alg8[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg8[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg8[0] + "</td>"
+                        }
+                        s += "<td class='content'></td>"
+                        if (d.alg0[1] == "对"){
+                            s+= "<td class='dui'>" + d.alg0[0] + "</td>"
+                        } else {
+                            s+= "<td class='cuo'>" + d.alg0[0] + "</td>"
+                        }
+                        s+= "<td>" + d.pet1 + "</td>"
+                        s+= "<td>" + d.gain1 + "</td>"
+                        s+= "<td>" + d.pet2 + "</td>"
+                        s+= "<td>" + d.gain2 + "</td>"
+                        s+= "<td>" + d.pet3 + "</td>"
+                        s+= "<td>" + d.gain3 + "</td>"
+                        s+= "<td>" + d.pet4 + "</td>"
+                        s+= "<td>" + d.gain4 + "</td>"
+                        $("#history").append(s)
+                    }
+                }
+            })
+        }
+
+        function get_now() {
+            $.ajax({
+                type: 'GET',
+                url: "/now/" + t,
+                success: function (data) {
+                    timestamp = data.t;
+                    data = data.data;
+                    var s = "<td>" + data.id + "</td>"
+                    s += "<td id='dao'>" + "" + "</td>"
+                    s += "<td>" + data.alg1 + "</td>"
+                    s += "<td>" + data.alg2 + "</td>"
+                    s += "<td>" + data.alg3 + "</td>"
+                    s += "<td>" + data.alg4 + "</td>"
+                    s += "<td>" + data.alg5 + "</td>"
+                    s += "<td>" + data.alg6 + "</td>"
+                    s += "<td>" + data.alg7 + "</td>"
+                    s += "<td>" + data.alg8 + "</td>"
+                    s += "<td>" + data.alg0 + "</td>"
+                    $("#data").empty()
+                    $("#data").append(s)
+                    dao = 170 - (parseInt((new Date()).getTime() * 0.001)-parseInt(timestamp))
+                    var timeid = setInterval(function () {
+                        $("#dao").text(dao)
+                        dao--
+                        if (dao <= 0){
+                            window.clearInterval(timeid)
+                            $("#dao").text("开奖中")
+                        }
+                    }, 1000)
+                }
+            })
+        }
+    </script>
+</body>
+</html>
